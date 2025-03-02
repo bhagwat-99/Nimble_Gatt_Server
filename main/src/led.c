@@ -68,9 +68,19 @@ void led_init(void) {
 
 #elif CONFIG_BLINK_LED_GPIO
 
-void led_on(void) { gpio_set_level(CONFIG_BLINK_GPIO, true); }
+void led_on(void){
 
-void led_off(void) { gpio_set_level(CONFIG_BLINK_GPIO, false); }
+    gpio_set_level(CONFIG_BLINK_GPIO, true); 
+    led_state = true;
+
+    
+}
+
+void led_off(void) { 
+
+    gpio_set_level(CONFIG_BLINK_GPIO, false);
+    led_state = false;
+}
 
 void led_init(void) {
     ESP_LOGI(TAG, "example configured to blink gpio led!");

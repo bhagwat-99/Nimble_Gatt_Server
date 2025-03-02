@@ -29,6 +29,7 @@ static bool heart_rate_ind_status = false;
 
 /* Automation IO service */
 static const ble_uuid16_t auto_io_svc_uuid = BLE_UUID16_INIT(0x1815);
+static uint8_t led_chr_val = 0;
 static uint16_t led_chr_val_handle;
 static const ble_uuid128_t led_chr_uuid =
     BLE_UUID128_INIT(0x23, 0xd1, 0xbc, 0xea, 0x5f, 0x78, 0x23, 0x15, 0xde, 0xef,
@@ -58,7 +59,7 @@ static const struct ble_gatt_svc_def gatt_svr_svcs[] = {
             (struct ble_gatt_chr_def[]){/* LED characteristic */
                                         {.uuid = &led_chr_uuid.u,
                                          .access_cb = led_chr_access,
-                                         .flags = BLE_GATT_CHR_F_WRITE,
+                                         .flags = BLE_GATT_CHR_F_WRITE | BLE_GATT_CHR_F_READ,
                                          .val_handle = &led_chr_val_handle},
                                         {0}},
     },
@@ -115,7 +116,7 @@ error:
 static int led_chr_access(uint16_t conn_handle, uint16_t attr_handle,
                           struct ble_gatt_access_ctxt *ctxt, void *arg) {
     /* Local variables */
-    int rc;
+    int rc = 0;
 
     /* Handle access events */
     /* Note: LED characteristic is write only */
@@ -151,6 +152,31 @@ static int led_chr_access(uint16_t conn_handle, uint16_t attr_handle,
             return rc;
         }
         goto error;
+
+        //////////////////////////////////////////////////////
+    /* Read characteristic event */
+    case BLE_GATT_ACCESS_OP_READ_CHR:
+        /* Verify connection handle */
+        if (conn_handle != BLE_HS_CONN_HANDLE_NONE) {
+            ESP_LOGI(TAG, "characteristic write; conn_handle=%d attr_handle=%d",
+                     conn_handle, attr_handle);
+        } else {
+            ESP_LOGI(TAG,
+                     "characteristic write by nimble stack; attr_handle=%d",
+                     attr_handle);
+        }
+
+        /* Verify attribute handle */
+        if (attr_handle == led_chr_val_handle) {
+
+            led_chr_val = get_led_state();
+            rc = os_mbuf_append(ctxt->om, &led_chr_val,
+                                sizeof(led_chr_val));
+            return rc == 0 ? 0 : BLE_ATT_ERR_INSUFFICIENT_RES;
+        }
+        goto error;
+
+        //////////////////////////////////////////////////////
 
     /* Unknown event */
     default:
@@ -264,9 +290,6 @@ int gatt_svc_init(void) {
     if (rc != 0) {
         return rc;
     }
-
-
-    ESP_LOGI(TAG, "gatt_svc_init ---------->!");
 
     return 0;
 }
