@@ -9,6 +9,7 @@
 #include "gatt_svc.h"
 #include "heart_rate.h"
 #include "led.h"
+#include "env_data.h"
 
 /* Library function declarations */
 void ble_store_config_init(void);
@@ -65,13 +66,35 @@ static void heart_rate_task(void *param) {
     while (1) {
         /* Update heart rate value every 1 second */
         update_heart_rate();
-        ESP_LOGI(TAG, "heart rate updated to %d", get_heart_rate());
+        //ESP_LOGI(TAG, "heart rate updated to %d", get_heart_rate());
 
         /* Send heart rate indication if enabled */
         send_heart_rate_indication();
 
         /* Sleep */
         vTaskDelay(HEART_RATE_TASK_PERIOD);
+    }
+
+    /* Clean up at exit */
+    vTaskDelete(NULL);
+}
+
+static void env_data_task(void *param) {
+    /* Task entry log */
+    ESP_LOGI(TAG, "env data task has been started!");
+
+    /* Loop forever */
+    while (1) {
+        /* Update heart rate value every 1 second */
+        update_env_data();
+        //ESP_LOGI(TAG, "heart rate updated to %d", get_heart_rate());
+
+        /* Send heart rate indication if enabled */
+        send_temperature_indication();
+        send_humidity_indication();
+
+        /* Sleep */
+        vTaskDelay(ENV_DATA_TASK_PERIOD);
     }
 
     /* Clean up at exit */
@@ -129,5 +152,7 @@ void app_main(void) {
     /* Start NimBLE host task thread and return */
     xTaskCreate(nimble_host_task, "NimBLE Host", 4*1024, NULL, 5, NULL);
     xTaskCreate(heart_rate_task, "Heart Rate", 4*1024, NULL, 5, NULL);
+    xTaskCreate(env_data_task, "Env Data", 4*1024, NULL, 6, NULL);
+
     return;
 }
