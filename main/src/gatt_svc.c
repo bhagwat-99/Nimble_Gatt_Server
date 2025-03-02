@@ -266,7 +266,7 @@ static int temperature_chr_access(uint16_t conn_handle, uint16_t attr_handle,
         if (attr_handle == temperature_chr_val_handle) {
             /* Update access buffer value */
             temperature_chr_val = get_temperature_value();
-
+            //ESP_LOGI(TAG, "Temperature = %f\n", temperature_chr_val);
             rc = os_mbuf_append(ctxt->om, &temperature_chr_val,
                                 sizeof(temperature_chr_val));
             return rc == 0 ? 0 : BLE_ATT_ERR_INSUFFICIENT_RES;
@@ -310,6 +310,7 @@ static int humidity_chr_access(uint16_t conn_handle, uint16_t attr_handle,
         if (attr_handle == humidity_chr_val_handle) {
             /* Update access buffer value */
             humidity_chr_val = get_humidity_value();
+            //ESP_LOGI(TAG, "Humidity = %f\n", humidity_chr_val);
 
             rc = os_mbuf_append(ctxt->om, &humidity_chr_val,
                                 sizeof(humidity_chr_val));

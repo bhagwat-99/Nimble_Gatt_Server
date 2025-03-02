@@ -22,8 +22,8 @@ float get_humidity_value(void){
 }
 
 void update_env_data(void){
-
-    temperature = 25.39 + (float)(esp_random() % 9);
-    humidity = 70.54 + (float)(esp_random() % 14);
+    
+    temperature = temperature + 1.5f;
+    humidity = humidity + 1.5f;
 }
 
