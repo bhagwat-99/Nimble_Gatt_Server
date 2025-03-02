@@ -44,7 +44,7 @@ static const ble_uuid128_t led_chr_uuid =
 static const ble_uuid16_t env_data_svc_uuid = BLE_UUID16_INIT(0x181A);
 
 // temperature characteristic
-static uint16_t temperature_chr_val = 0;
+static float temperature_chr_val = 0;
 static uint16_t temperature_chr_val_handle;
 static const ble_uuid16_t temperature_chr_uuid = BLE_UUID16_INIT(0x2A6E);
 
@@ -53,7 +53,7 @@ static bool temperature_chr_conn_handle_inited = false;
 static bool temperature_ind_status = false;
 
 // humidity characteristic
-static uint16_t humidity_chr_val = 0;
+static float humidity_chr_val = 0;
 static uint16_t humidity_chr_val_handle;
 static const ble_uuid16_t humidity_chr_uuid = BLE_UUID16_INIT(0x2A6F);
 
@@ -266,6 +266,7 @@ static int temperature_chr_access(uint16_t conn_handle, uint16_t attr_handle,
         if (attr_handle == temperature_chr_val_handle) {
             /* Update access buffer value */
             temperature_chr_val = get_temperature_value();
+
             rc = os_mbuf_append(ctxt->om, &temperature_chr_val,
                                 sizeof(temperature_chr_val));
             return rc == 0 ? 0 : BLE_ATT_ERR_INSUFFICIENT_RES;
@@ -309,6 +310,7 @@ static int humidity_chr_access(uint16_t conn_handle, uint16_t attr_handle,
         if (attr_handle == humidity_chr_val_handle) {
             /* Update access buffer value */
             humidity_chr_val = get_humidity_value();
+
             rc = os_mbuf_append(ctxt->om, &humidity_chr_val,
                                 sizeof(humidity_chr_val));
             return rc == 0 ? 0 : BLE_ATT_ERR_INSUFFICIENT_RES;

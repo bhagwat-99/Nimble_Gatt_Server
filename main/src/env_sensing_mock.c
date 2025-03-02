@@ -7,23 +7,23 @@
 #include "env_data.h"
 
 /* Private variables*/
-static float temperature    =   26.5;
-static float humidity       =   88.5;
+static float temperature    =   26.5f;
+static float humidity       =   88.5f;
 
 /* Public Function */
-uint16_t get_temperature_value(void){
+float get_temperature_value(void){
 
-    return (uint16_t)temperature;
+    return temperature;
 }
 
-uint16_t get_humidity_value(void){
+float get_humidity_value(void){
 
-    return (uint16_t)humidity;
+    return humidity;
 }
 
 void update_env_data(void){
 
-    temperature = 25 + (uint8_t)(esp_random() % 15);
-    humidity = 70 + (uint8_t)(esp_random() % 15);
+    temperature = 25.39 + (float)(esp_random() % 9);
+    humidity = 70.54 + (float)(esp_random() % 14);
 }
 

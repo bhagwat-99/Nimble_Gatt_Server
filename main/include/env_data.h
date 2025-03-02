@@ -9,8 +9,8 @@
 #define ENV_DATA_TASK_PERIOD (2000 / portTICK_PERIOD_MS)
 
 /* Public function declarations */
-uint16_t get_temperature_value(void);
-uint16_t get_humidity_value(void);
+float get_temperature_value(void);
+float get_humidity_value(void);
 
 void update_env_data(void);
 
